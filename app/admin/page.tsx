@@ -10,43 +10,56 @@ export default function AdminPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Catalog Manager</h1>
-        <Link href="/admin/products/new" className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition">
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-3xl font-bold" style={{ color: 'var(--text)' }}>Catalog</h1>
+          <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>{products.length} products</p>
+        </div>
+        <Link href="/admin/products/new"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition hover:opacity-90"
+          style={{ background: 'var(--blue)' }}>
           + Add Product
         </Link>
       </div>
 
-      <div className="bg-white rounded-xl border overflow-hidden">
+      <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
         <table className="w-full text-sm">
-          <thead className="bg-gray-50 border-b">
+          <thead style={{ borderBottom: '1px solid var(--border)' }}>
             <tr>
-              <th className="text-left px-4 py-3 font-semibold">Product</th>
-              <th className="text-right px-4 py-3 font-semibold">Source</th>
-              <th className="text-right px-4 py-3 font-semibold">Sell</th>
-              <th className="text-right px-4 py-3 font-semibold">Margin</th>
-              <th className="text-center px-4 py-3 font-semibold">Status</th>
-              <th className="px-4 py-3"></th>
+              {['Product', 'Source', 'Sell', 'Margin', 'Status', ''].map(h => (
+                <th key={h} className={`px-5 py-3.5 text-xs font-semibold uppercase tracking-wide ${h === 'Product' || h === '' ? 'text-left' : 'text-right'} ${h === 'Status' ? 'text-center' : ''}`}
+                  style={{ color: 'var(--text-muted)' }}>{h}</th>
+              ))}
             </tr>
           </thead>
-          <tbody className="divide-y">
-            {products.map(p => {
+          <tbody>
+            {products.map((p, i) => {
               const margin = ((p.sell_price - p.source_price) / p.sell_price * 100).toFixed(0);
               return (
-                <tr key={p.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-3 font-medium">{p.title}</td>
-                  <td className="px-4 py-3 text-right text-gray-500">${p.source_price.toFixed(2)}</td>
-                  <td className="px-4 py-3 text-right font-semibold">${p.sell_price.toFixed(2)}</td>
-                  <td className="px-4 py-3 text-right text-green-600 font-medium">{margin}%</td>
-                  <td className="px-4 py-3 text-center">
+                <tr key={p.id} style={{ borderTop: i > 0 ? '1px solid var(--border)' : 'none' }}>
+                  <td className="px-5 py-4 font-medium max-w-[200px] truncate" style={{ color: 'var(--text)' }}>{p.title}</td>
+                  <td className="px-5 py-4 text-right" style={{ color: 'var(--text-muted)' }}>${p.source_price.toFixed(2)}</td>
+                  <td className="px-5 py-4 text-right font-semibold" style={{ color: 'var(--text)' }}>${p.sell_price.toFixed(2)}</td>
+                  <td className="px-5 py-4 text-right">
+                    <span className="font-semibold" style={{ color: 'var(--green)' }}>{margin}%</span>
+                  </td>
+                  <td className="px-5 py-4 text-center">
                     <form action={togglePublish.bind(null, p.id, p.status)}>
-                      <button type="submit" className={`px-3 py-1 rounded-full text-xs font-semibold ${p.status === 'published' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
-                        {p.status === 'published' ? 'Published' : 'Draft'}
+                      <button type="submit"
+                        className="px-3 py-1 rounded-full text-xs font-semibold transition hover:opacity-80"
+                        style={p.status === 'published'
+                          ? { background: 'var(--green-light)', color: 'var(--green)' }
+                          : { background: 'var(--border)', color: 'var(--text-muted)' }}>
+                        {p.status === 'published' ? '● Published' : '○ Draft'}
                       </button>
                     </form>
                   </td>
-                  <td className="px-4 py-3 text-right">
-                    <Link href={`/admin/products/${p.id}`} className="text-blue-600 hover:underline mr-3">Edit</Link>
+                  <td className="px-5 py-4 text-right">
+                    <Link href={`/admin/products/${p.id}`}
+                      className="text-xs font-medium mr-4 hover:underline"
+                      style={{ color: 'var(--blue)' }}>
+                      Edit
+                    </Link>
                     <DeleteButton action={deleteProduct.bind(null, p.id)} />
                   </td>
                 </tr>
@@ -54,7 +67,9 @@ export default function AdminPage() {
             })}
           </tbody>
         </table>
-        {products.length === 0 && <p className="text-center py-10 text-gray-400">No products yet.</p>}
+        {products.length === 0 && (
+          <p className="text-center py-16 text-sm" style={{ color: 'var(--text-muted)' }}>No products yet. Add one to get started.</p>
+        )}
       </div>
     </div>
   );

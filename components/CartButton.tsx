@@ -21,11 +21,8 @@ export function AddToCartButton({ product }: { product: { id: number; title: str
   function handleAdd() {
     const cart = getCart();
     const existing = cart.find(i => i.id === product.id);
-    if (existing) {
-      existing.quantity += 1;
-    } else {
-      cart.push({ id: product.id, title: product.title, price: product.sell_price, quantity: 1 });
-    }
+    if (existing) existing.quantity += 1;
+    else cart.push({ id: product.id, title: product.title, price: product.sell_price, quantity: 1 });
     saveCart(cart);
     setAdded(true);
     setTimeout(() => setAdded(false), 1500);
@@ -34,9 +31,13 @@ export function AddToCartButton({ product }: { product: { id: number; title: str
   return (
     <button
       onClick={handleAdd}
-      className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition"
+      className="w-full py-3 rounded-xl font-semibold text-sm transition-all"
+      style={{
+        background: added ? 'var(--green)' : 'var(--blue)',
+        color: '#fff',
+      }}
     >
-      {added ? '✓ Added!' : 'Add to Cart'}
+      {added ? '✓ Added to cart!' : 'Add to Cart'}
     </button>
   );
 }
@@ -46,8 +47,7 @@ export function CartCount() {
   const router = useRouter();
 
   function update() {
-    const cart = getCart();
-    setCount(cart.reduce((s, i) => s + i.quantity, 0));
+    setCount(getCart().reduce((s, i) => s + i.quantity, 0));
   }
 
   useEffect(() => {
@@ -57,10 +57,20 @@ export function CartCount() {
   }, []);
 
   return (
-    <button onClick={() => router.push('/cart')} className="relative">
-      <span>🛒 Cart</span>
+    <button
+      onClick={() => router.push('/cart')}
+      className="relative flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors hover:bg-[var(--blue-light)] hover:text-[var(--blue)]"
+      style={{ color: 'var(--text-muted)' }}
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4zM3.6 6h16.8M16 10a4 4 0 0 1-8 0" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
+      </svg>
+      Cart
       {count > 0 && (
-        <span className="ml-1 bg-blue-600 text-white text-xs rounded-full px-2 py-0.5">{count}</span>
+        <span className="text-xs font-bold text-white rounded-full px-1.5 py-0.5 min-w-[20px] text-center"
+          style={{ background: 'var(--blue)', lineHeight: '1' }}>
+          {count}
+        </span>
       )}
     </button>
   );

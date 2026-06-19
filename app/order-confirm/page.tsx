@@ -1,7 +1,7 @@
 import { getDb } from '@/lib/db';
 import Link from 'next/link';
 
-type Order = { id: number; customer_name: string; address: string; total: number; status: string; created_at: string };
+type Order = { id: number; customer_name: string; address: string; total: number; status: string };
 type OrderItem = { title: string; quantity: number; price: number };
 
 export default function OrderConfirmPage({ searchParams }: { searchParams: { orderId?: string } }) {
@@ -11,38 +11,53 @@ export default function OrderConfirmPage({ searchParams }: { searchParams: { ord
   const items = db.prepare('SELECT * FROM order_items WHERE order_id=?').all(orderId) as OrderItem[];
 
   if (!order) {
-    return <p className="text-center py-20 text-gray-500">Order not found.</p>;
+    return <p className="text-center py-20" style={{ color: 'var(--text-muted)' }}>Order not found.</p>;
   }
 
   return (
-    <div className="max-w-lg mx-auto text-center">
-      <div className="bg-white rounded-xl border p-8">
-        <div className="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <span className="text-2xl">✓</span>
+    <div className="max-w-lg mx-auto">
+      <div className="rounded-2xl p-8 text-center" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
+        <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-5 text-2xl"
+          style={{ background: 'var(--green-light)', color: 'var(--green)' }}>
+          ✓
         </div>
-        <h1 className="text-2xl font-bold mb-1">Order Confirmed!</h1>
-        <p className="text-gray-500 mb-6">Order #{order.id} — We&apos;ll be in touch soon.</p>
+        <h1 className="text-2xl font-bold mb-1" style={{ color: 'var(--text)' }}>Order Confirmed!</h1>
+        <p className="text-sm mb-8" style={{ color: 'var(--text-muted)' }}>
+          Order <span className="font-semibold" style={{ color: 'var(--text)' }}>#{order.id}</span> — we&apos;ll be in touch soon.
+        </p>
 
-        <div className="text-left bg-gray-50 rounded-lg p-4 mb-6 divide-y">
+        <div className="rounded-xl overflow-hidden mb-6 text-left" style={{ border: '1px solid var(--border)' }}>
           {items.map((item, i) => (
-            <div key={i} className="flex justify-between py-2 text-sm">
-              <span>{item.title} × {item.quantity}</span>
-              <span>${(item.price * item.quantity).toFixed(2)}</span>
+            <div key={i} className="flex justify-between px-4 py-3 text-sm"
+              style={{ borderBottom: i < items.length - 1 ? '1px solid var(--border)' : 'none' }}>
+              <span style={{ color: 'var(--text)' }}>{item.title} × {item.quantity}</span>
+              <span className="font-semibold" style={{ color: 'var(--text)' }}>${(item.price * item.quantity).toFixed(2)}</span>
             </div>
           ))}
-          <div className="flex justify-between py-2 font-bold">
-            <span>Total</span>
-            <span className="text-blue-600">${order.total.toFixed(2)}</span>
+          <div className="flex justify-between px-4 py-3 font-bold" style={{ borderTop: '2px solid var(--border)' }}>
+            <span style={{ color: 'var(--text)' }}>Total</span>
+            <span style={{ color: 'var(--blue)' }}>${order.total.toFixed(2)}</span>
           </div>
         </div>
 
-        <div className="text-left text-sm text-gray-600 mb-6">
-          <p><span className="font-medium">Name:</span> {order.customer_name}</p>
-          <p><span className="font-medium">Address:</span> {order.address}</p>
-          <p><span className="font-medium">Payment:</span> Cash on Delivery</p>
+        <div className="rounded-xl p-4 text-sm text-left mb-6" style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}>
+          <div className="flex gap-2 mb-1">
+            <span style={{ color: 'var(--text-muted)' }}>Name</span>
+            <span className="font-medium" style={{ color: 'var(--text)' }}>{order.customer_name}</span>
+          </div>
+          <div className="flex gap-2 mb-1">
+            <span style={{ color: 'var(--text-muted)' }}>Address</span>
+            <span className="font-medium" style={{ color: 'var(--text)' }}>{order.address}</span>
+          </div>
+          <div className="flex gap-2">
+            <span style={{ color: 'var(--text-muted)' }}>Payment</span>
+            <span className="font-medium" style={{ color: 'var(--text)' }}>Cash on Delivery</span>
+          </div>
         </div>
 
-        <Link href="/store" className="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">
+        <Link href="/store"
+          className="inline-block px-6 py-2.5 rounded-xl text-sm font-semibold text-white transition hover:opacity-90"
+          style={{ background: 'var(--blue)' }}>
           Continue Shopping
         </Link>
       </div>
